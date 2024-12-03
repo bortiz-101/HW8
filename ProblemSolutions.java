@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   ADD YOUR NAME / SECTION NUMBER HERE
+ *   Brian Ortiz/001
  *
  *   This java file contains the problem solutions of canFinish and
  *   numGroups methods.
