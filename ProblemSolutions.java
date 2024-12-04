@@ -72,18 +72,49 @@ class ProblemSolutions {
      * @return boolean          - True if all exams can be taken, else false.
      */
 
-    public boolean canFinish(int numExams, 
+    public boolean canFinish(int numExams,
                              int[][] prerequisites) {
-      
+
         int numNodes = numExams;  // # of nodes in graph
 
         // Build directed graph's adjacency list
-        ArrayList<Integer>[] adj = getAdjList(numExams, 
-                                        prerequisites); 
+        ArrayList<Integer>[] adj = getAdjList(numExams,
+                                        prerequisites);
+        int[] visited = new int[numNodes];
 
-        // ADD YOUR CODE HERE - ADD YOUR NAME / SECTION AT TOP OF FILE
-        return false;
+        for (int i = 0; i < numNodes; i++) {
+            if (visited[i] == 0) {
+                Stack<Integer> stack = new Stack<>();
+                stack.push(i);
 
+                while (!stack.isEmpty()) {
+                    int node = stack.peek();
+                    if (visited[node] == 0) {
+                        visited[node] = 1;
+                    }
+
+                    boolean foundUnvisited = false;
+
+                    for (int neighbor : adj[node]) {
+                        if (visited[neighbor] == 1) {
+                            return false;
+                        }
+
+                        if (visited[neighbor] == 0) {
+                            stack.push(neighbor);
+                            foundUnvisited = true;
+                            break;
+                        }
+                    }
+
+                    if (!foundUnvisited) {
+                        visited[node] = 2;
+                        stack.pop();
+                    }
+                }
+            }
+        }
+        return true;
     }
 
 
@@ -101,7 +132,7 @@ class ProblemSolutions {
     private ArrayList<Integer>[] getAdjList(
             int numNodes, int[][] edges) {
 
-        ArrayList<Integer>[] adj 
+        ArrayList<Integer>[] adj
                     = new ArrayList[numNodes];      // Create an array of ArrayList ADT
 
         for (int node = 0; node < numNodes; node++){
@@ -165,34 +196,38 @@ class ProblemSolutions {
 
     public int numGroups(int[][] adjMatrix) {
         int numNodes = adjMatrix.length;
-        Map<Integer,List<Integer>> graph = new HashMap();
-        int i = 0, j =0;
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        boolean[] visited = new boolean[numNodes];
+        int groups = 0;
 
-        /*
-         * Converting the Graph Adjacency Matrix to
-         * an Adjacency List representation. This
-         * sample code illustrates a technique to do so.
-         */
-
-        for(i = 0; i < numNodes ; i++){
-            for(j = 0; j < numNodes; j++){
-                if( adjMatrix[i][j] == 1 && i != j ){
-                    // Add AdjList for node i if not there
-                    graph.putIfAbsent(i, new ArrayList());
-                    // Add AdjList for node j if not there
-                    graph.putIfAbsent(j, new ArrayList());
-
-                    // Update node i adjList to include node j
+        for (int i = 0; i < numNodes; i++) {
+            for (int j = 0; j < numNodes; j++) {
+                if (adjMatrix[i][j] == 1 && i != j) {
+                    graph.putIfAbsent(i, new ArrayList<>());
+                    graph.putIfAbsent(j, new ArrayList<>());
                     graph.get(i).add(j);
-                    // Update node j adjList to include node i
                     graph.get(j).add(i);
                 }
             }
         }
 
-        // YOUR CODE GOES HERE - you can add helper methods, you do not need
-        // to put all code in this method.
-        return -1;
+        for (int i = 0; i < numNodes; i++) {
+            if (!visited[i]) {
+                search(i, graph, visited);
+                groups++;
+            }
+        }
+        return groups;
+    }
+
+    private void search(int node, Map<Integer, List<Integer>> graph, boolean[] visited) {
+        visited[node] = true;
+
+        for (int neighbor : graph.getOrDefault(node, new ArrayList<>())) {
+            if (!visited[neighbor]) {
+                search(neighbor, graph, visited);
+            }
+        }
     }
 
 }
